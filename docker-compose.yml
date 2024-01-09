@@ -1,8 +1,7 @@
-version: '3.1'
+version: '3.8'
 services:
-  stats-server:
+  stat-server:
     build: stat/stat-server
-    image: stat/stat-server
     container_name: stat-server
     ports:
       - "9090:9090"
@@ -19,7 +18,7 @@ services:
     ports:
       - "6541:5432"
     volumes:
-      - ./stat/stat-server/src/main/resources/schema.sql
+      #- ./stat/stat-server/src/main/resources/schema.sql
       - ./pgdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=admin
