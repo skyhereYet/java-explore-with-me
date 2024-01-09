@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.1'
 services:
   stats-server:
     build: stat/stat-server
@@ -18,12 +18,12 @@ services:
     ports:
       - "6541:5432"
     volumes:
-      #- ./stat/stat-server/src/main/resources/schema.sql
-      - ./pgdata:/var/lib/postgresql/data
+      - /stat/stat-server/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - /var/lib/postgresql/data
     environment:
+      - POSTGRES_DB=stats
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
-      - POSTGRES_DB=stat
 
   ewm-service:
     build: main-service
