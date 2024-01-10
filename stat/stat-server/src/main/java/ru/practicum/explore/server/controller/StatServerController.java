@@ -12,7 +12,6 @@ import ru.practicum.explore.server.model.StatHit;
 import ru.practicum.explore.server.service.StatServerService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
