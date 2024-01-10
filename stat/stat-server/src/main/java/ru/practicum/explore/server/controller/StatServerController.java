@@ -12,6 +12,7 @@ import ru.practicum.explore.server.model.StatHit;
 import ru.practicum.explore.server.service.StatServerService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -36,7 +37,7 @@ public class StatServerController {
                                       @RequestParam(required = false) List<String> uris,
                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) {
         log.info("GET request. Parameters: \n\tstart: {}\n\tend: {}\n\turis: {}\n\tunique: {}",
-                start, end, uris.toString(), unique);
+                start, end, uris, unique);
         return statServerService.getAllStats(start, end, uris, unique);
     }
 }

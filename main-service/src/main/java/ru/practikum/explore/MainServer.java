@@ -8,5 +8,6 @@ public class MainServer {
 
     public static void main(String[] args) {
         SpringApplication.run(MainServer.class, args);
+        TestClient.testClient();
     }
 }
