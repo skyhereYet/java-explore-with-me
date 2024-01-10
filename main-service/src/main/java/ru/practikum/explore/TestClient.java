@@ -1,23 +1,24 @@
 package ru.practikum.explore;
 
-import dto.Hit;
+import dto.HitDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.explore.client.StatClientApp;
+import ru.practicum.explore.client.service.StatClientService;
 
 import java.time.LocalDateTime;
 
 @Component
 @Slf4j
 public class TestClient {
-    public static void testClient() {
-        StatClientApp statClientApp = new StatClientApp("http://localhost:9090");
-        Hit hitDto = new Hit(0,
+
+    public void testClient() {
+        StatClientService statClientService = new StatClientService("http://localhost:9090");
+        HitDto hitDto = new HitDto(0,
                 "main-server",
                 "http://localhost/from-main-server",
                 "192.168.0.1",
                 LocalDateTime.now());
-        Hit hit = statClientApp.createHit(hitDto);
+        HitDto hit = statClientService.createHit(hitDto);
         log.info("Hit original: " +
                 "\n\tid: {}" +
                 "\n\tapp: {}" +

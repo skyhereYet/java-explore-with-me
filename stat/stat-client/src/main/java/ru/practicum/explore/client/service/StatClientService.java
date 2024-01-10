@@ -1,12 +1,16 @@
-package ru.practicum.explore.client;
+package ru.practicum.explore.client.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.jdi.request.InvalidRequestStateException;
-import dto.Hit;
+import dto.HitDto;
 import dto.StatView;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -16,19 +20,23 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+@Service
 @Slf4j
-public class StatClientApp {
+@PropertySource({"classpath:application.properties"})
+public class StatClientService {
 
     private final HttpClient client = HttpClient.newHttpClient();
-    private final String url;
+    @Value("${service-stat.url}")
+    private String url;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public StatClientApp(String url) {
+    @Autowired
+    public StatClientService(@Value("${service-stat.url}") String url) {
         this.url = url;
     }
 
-    public Hit createHit(Hit hitDto) {
+    public HitDto createHit(HitDto hitDto) {
+        log.info("POST request. Create a hit: " + hitDto.toString());
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         URI uri = URI.create(url + "/hit");
@@ -46,7 +54,7 @@ public class StatClientApp {
                 .build();
         try {
             final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            return objectMapper.readValue(response.body(), Hit.class);
+            return objectMapper.readValue(response.body(), HitDto.class);
         } catch (Exception e) {
             throw new InvalidRequestStateException(e.getMessage());
         }
@@ -56,6 +64,8 @@ public class StatClientApp {
                                       LocalDateTime end,
                                       List<String> uris,
                                       Boolean unique) {
+        log.info("GET request. Parameters: \n\tstart: {}\n\tend: {}\n\turis: {}\n\tunique: {}",
+                start, end, uris, unique);
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
         URI uri = URI.create(url + "/stats?start={start}&end={end}&uris={uris}&unique={unique}");

@@ -8,6 +8,7 @@ public class MainServer {
 
     public static void main(String[] args) {
         SpringApplication.run(MainServer.class, args);
-        TestClient.testClient();
+        TestClient testClient = new TestClient();
+        testClient.testClient();
     }
 }

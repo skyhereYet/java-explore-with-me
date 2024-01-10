@@ -1,6 +1,6 @@
 package ru.practicum.explore.server.controller;
 
-import dto.Hit;
+import dto.HitDto;
 import dto.StatView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.explore.server.model.StatHit;
 import ru.practicum.explore.server.service.StatServerService;
 
 import java.time.LocalDateTime;
@@ -25,9 +24,9 @@ public class StatServerController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public StatHit createHit(@RequestBody Hit hit) {
-        log.info("POST request. Create a hit: " + hit.toString());
-        return statServerService.createHit(hit);
+    public HitDto createHit(@RequestBody HitDto hitDto) {
+        log.info("POST request. Create a hit: " + hitDto.toString());
+        return statServerService.createHit(hitDto);
     }
 
     @GetMapping(value = "/stats")
