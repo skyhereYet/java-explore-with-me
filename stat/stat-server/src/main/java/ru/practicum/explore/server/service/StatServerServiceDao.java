@@ -31,12 +31,15 @@ public class StatServerServiceDao implements StatServerService {
 
     @Override
     public List<StatView> getAllStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        log.info("Method getAllStats: start={}, end={}, unique={}", start, end, unique);
         if (start.isAfter(end) || start.isEqual(end)) {
             throw new DateTimeValidateException("Start and end time exception: start is after end or equal");
         }
         if (unique) {
+            log.info("Method getAllStatsUnique: List<StatView>={}", statServerRepository.getAllStatsUnique(start, end, uris));
             return statServerRepository.getAllStatsUnique(start, end, uris);
         } else {
+            log.info("Method getAllStats: List<StatView>={}", statServerRepository.getAllStats(start, end, uris));
             return statServerRepository.getAllStats(start, end, uris);
         }
     }

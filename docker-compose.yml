@@ -26,10 +26,26 @@ services:
 
   ewm-service:
     build: main-service
-    container_name:  main-service
+    container_name:  ewm-service
     ports:
       - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      - CLIENT_URL=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
+      - SPRING_DATASOURCE_USER=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
 
-#  ewm-db:
-#    image: postgres:14-alpine
-#    container_name: ewm-db
+  ewm-db:
+    image: postgres:14-alpine
+    container_name: ewm-db
+    ports:
+      - "6544:5432"
+    volumes:
+      - /var/lib/postgresql/data/
+      #- ./main-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_DB=ewm-db
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
