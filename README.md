@@ -8,3 +8,4 @@
 6) Разрешить ставить лайк/дизлайк любым опубликованным событиям.
 
 Ссылка на PR 3-го этапа диплома:
+https://github.com/skyhereYet/java-explore-with-me/pull/4
