@@ -7,6 +7,7 @@ import lombok.Setter;
 import ru.practicum.explore.util.Create;
 
 import javax.validation.constraints.*;
+import java.util.Comparator;
 
 @Getter
 @Setter
@@ -22,4 +23,13 @@ public class UserDto {
     @NotNull(groups = {Create.class})
     @Size(groups = {Create.class}, min = 6, max = 254)
     private String email;
+    private int likes;
+    private int dislikes;
+
+    public static final Comparator<UserDto> likesComparator = new Comparator<UserDto>() {
+        @Override
+        public int compare(UserDto user1, UserDto user2) {
+            return (int) (user2.getLikes() - user1.getLikes());
+        }
+    };
 }

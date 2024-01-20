@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.practicum.explore.categories.dto.CategoryDto;
 import ru.practicum.explore.categories.model.Category;
-import ru.practicum.explore.compilations.dto.CompilationDto;
-import ru.practicum.explore.compilations.model.Compilation;
 import ru.practicum.explore.event.model.Location;
 import ru.practicum.explore.event.model.StateEvent;
 import ru.practicum.explore.exception.ConflictRuleException;
@@ -18,6 +16,7 @@ import ru.practicum.explore.user.dto.UserShortDto;
 import ru.practicum.explore.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +54,11 @@ public class EventMapper {
         } else {
             event.setRequestModeration(true);
         }
+        event.setLikes(new ArrayList<>());
         return event;
     }
 
-    public EventFullDto toFullEventDto(Event event, long views, int confirmedRequests) {
+    public EventFullDto toEventFullDto(Event event, long views, int confirmedRequests) {
         EventFullDto fullDto = new EventFullDto();
         fullDto.setId(event.getId());
         fullDto.setDescription(event.getDescription());
@@ -75,6 +75,16 @@ public class EventMapper {
         fullDto.setTitle(event.getTitle());
         fullDto.setViews(views);
         fullDto.setConfirmedRequests(confirmedRequests);
+        fullDto.setLikes(event.getLikes().stream()
+                .filter(like -> {
+                    return like.isLike();
+                })
+                .collect(Collectors.toList()).size());
+        fullDto.setDislikes(event.getLikes().stream()
+                .filter(like -> {
+                    return !like.isLike();
+                })
+                .collect(Collectors.toList()).size());
         return fullDto;
     }
 
@@ -159,17 +169,27 @@ public class EventMapper {
             }
         }
         eventShortDto.setViews(views);
+        eventShortDto.setLikes(event.getLikes().stream()
+                .filter(like -> {
+                    return like.isLike();
+                })
+                .collect(Collectors.toList()).size());
+        eventShortDto.setDislikes(event.getLikes().stream()
+                .filter(like -> {
+                    return !like.isLike();
+                })
+                .collect(Collectors.toList()).size());
         return eventShortDto;
     }
 
     public List<EventFullDto> toAdminEventList(List<Event> eventList, List<StatView> viewStatList,
                                                       List<ViewRequest> viewRequestList) {
         return eventList.stream()
-                .map(event -> toEventFullDto(event, viewStatList, viewRequestList))
+                .map(event -> toEventFullDtoWithStat(event, viewStatList, viewRequestList))
                 .collect(Collectors.toList());
     }
 
-    public EventFullDto toEventFullDto(Event event, List<StatView> viewStatList, List<ViewRequest> viewRequestList) {
+    public EventFullDto toEventFullDtoWithStat(Event event, List<StatView> viewStatList, List<ViewRequest> viewRequestList) {
         long views = 0;
         int confirmedRequests = 0;
         EventFullDto eventFullDto = new EventFullDto();
@@ -202,6 +222,16 @@ public class EventMapper {
         eventFullDto.setCategory(new CategoryDto(event.getCategory().getId(), event.getCategory().getName()));
         eventFullDto.setInitiator(new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()));
         eventFullDto.setTitle(event.getTitle());
+        eventFullDto.setLikes(event.getLikes().stream()
+                .filter(like -> {
+                    return like.isLike();
+                })
+                .collect(Collectors.toList()).size());
+        eventFullDto.setDislikes(event.getLikes().stream()
+                .filter(like -> {
+                    return !like.isLike();
+                })
+                .collect(Collectors.toList()).size());
         return eventFullDto;
     }
 
@@ -216,62 +246,4 @@ public class EventMapper {
             }
             return eventShortDtoMap;
         }
-
-
-
-
-
-
-
-
-    public Map<Integer, EventShortDto> toPublicEventMap(List<Event> events, List<StatView> viewStatList,
-                                                        List<ViewRequest> viewRequsts) {
-        Map<Integer, EventShortDto> eventShortDto = new HashMap<>();
-        List<EventShortDto> eventShortDtos = events.stream()
-                .map(event -> toMapperShort(event, viewStatList, viewRequsts)).collect(Collectors.toList());
-        for (EventShortDto ev : eventShortDtos) {
-            eventShortDto.put(ev.getId(), ev);
-        }
-        return eventShortDto;
-    }
-
-    private EventShortDto toMapperShort(Event event, List<StatView> viewStats, List<ViewRequest> viewRequsts) {
-        long views = 0;
-        int confirmedRequests = 0;
-        EventShortDto eventShortDto = new EventShortDto();
-        eventShortDto.setAnnotation(event.getAnnotation());
-        eventShortDto.setCategory(new CategoryDto(event.getCategory().getId(), event.getCategory().getName()));
-        eventShortDto.setEventDate(event.getEventDate());
-        eventShortDto.setInitiator(new UserShortDto(event.getInitiator().getId(), event.getInitiator().getName()));
-        eventShortDto.setTitle(event.getTitle());
-        eventShortDto.setPaid(event.isPaid());
-        eventShortDto.setId(event.getId());
-        String uri = "/events/" + event.getId();
-        for (StatView vs : viewStats) {
-            if (appName.equals(vs.getApp()) && vs.getUri().equals(uri)) {
-                views = vs.getHits();
-                break;
-            }
-        }
-        eventShortDto.setViews(views);
-
-        for (ViewRequest vr : viewRequsts) {
-            if (vr.getEvent().equals(event.getId())) {
-                confirmedRequests = vr.getHit();
-                break;
-            }
-        }
-        eventShortDto.setConfirmedRequests(confirmedRequests);
-        return eventShortDto;
-    }
-
-    public CompilationDto mapperCompilationDto(Compilation com, Map<Integer, EventShortDto> eventShortDtos) {
-        CompilationDto compilationDto = new CompilationDto();
-        compilationDto.setId(com.getId());
-        compilationDto.setPinned(com.isPinned());
-        compilationDto.setTitle(com.getTitle());
-        compilationDto.setEvents(com.getEvents().stream()
-                .map(event -> eventShortDtos.get(event.getId())).collect(Collectors.toList()));
-        return compilationDto;
-    }
 }

@@ -54,6 +54,7 @@ public class AdminEventController {
     public EventFullDto updateEventAdmin(@PathVariable Integer eventId,
                                         @Validated @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
 
+        log.info("PATCH request. Update event by admin: {}", updateEventAdminRequest.toString());
         return eventService.updateEventAdmin(eventId, updateEventAdminRequest);
     }
 }
