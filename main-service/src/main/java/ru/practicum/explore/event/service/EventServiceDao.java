@@ -86,7 +86,7 @@ public class EventServiceDao implements EventService {
         log.info("Check category successfully. Category: " + category.toString());
         //create Event
         Event eventDto = eventMapper.toEvent(newEventDto, category, user);
-        return eventMapper.toFullEventDto(eventRepository.save(eventDto), 0, 0);
+        return eventMapper.toEventFullDto(eventRepository.save(eventDto), 0, 0);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class EventServiceDao implements EventService {
 
         //load requests
         int confirmRequests = requestRepository.findAllByStatusAndEvent(StateRequest.CONFIRMED, event).size();
-        return eventMapper.toFullEventDto(eventRepository.save(eventDao), views, confirmRequests);
+        return eventMapper.toEventFullDto(eventRepository.save(eventDao), views, confirmRequests);
     }
 
     @Override
@@ -166,7 +166,7 @@ public class EventServiceDao implements EventService {
 
         //load requests
         int confirmRequests = requestRepository.findAllByStatusAndEvent(StateRequest.CONFIRMED, eventDao).size();
-        return eventMapper.toFullEventDto(eventDao, views, confirmRequests);
+        return eventMapper.toEventFullDto(eventDao, views, confirmRequests);
     }
 
     @Override
@@ -404,7 +404,7 @@ public class EventServiceDao implements EventService {
         Event eventDaoNew = eventRepository.save(eventDao);
         //load requests
         int confirmRequests = requestRepository.findAllByStatusAndEvent(StateRequest.CONFIRMED, eventDao).size();
-        return eventMapper.toFullEventDto(eventDaoNew, views, confirmRequests);
+        return eventMapper.toEventFullDto(eventDaoNew, views, confirmRequests);
     }
 
     @Override
@@ -462,8 +462,10 @@ public class EventServiceDao implements EventService {
             SortEvent sort = eventsPublicParam.getSort();
             if (sort.equals(SortEvent.EVENT_DATE)) {
                 Collections.sort(eventShortDtoList, EventShortDto.dateComparator);
-            } else {
+            } else if (sort.equals(SortEvent.VIEWS)) {
                 Collections.sort(eventShortDtoList, EventShortDto.viewsComparator);
+            } else {
+                Collections.sort(eventShortDtoList, EventShortDto.likesComparator);
             }
         }
 
@@ -503,7 +505,7 @@ public class EventServiceDao implements EventService {
         //load requests
         int confirmRequests = requestRepository.findAllByStatusAndEvent(StateRequest.CONFIRMED, eventDao).size();
         Event eventDaoNew = eventRepository.save(eventDao);
-        return eventMapper.toFullEventDto(eventDaoNew, views, confirmRequests);
+        return eventMapper.toEventFullDto(eventDaoNew, views, confirmRequests);
     }
 
 

@@ -49,6 +49,18 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleLikeExistException(final LikeExistException e) {
+        log.warn("Error caught: 404, " + e.getMessage());
+        return new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                "The required object was not found.",
+                e.getMessage(),
+                LocalDateTime.now(),
+                e.getStackTrace().toString());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleUserExistException(final UserExistException e) {
         log.warn("Error caught: 404, " + e.getMessage());
         return new ErrorResponse(

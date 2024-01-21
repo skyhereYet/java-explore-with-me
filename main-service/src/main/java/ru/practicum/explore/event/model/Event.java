@@ -4,10 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import ru.practicum.explore.categories.model.Category;
+import ru.practicum.explore.likes.model.Like;
 import ru.practicum.explore.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -52,10 +54,17 @@ public class Event {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "published")
     private LocalDateTime publishedOn;
-        private String title;
+    private String title;
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "user_id", nullable = false)
     private User initiator;
+    @ToString.Exclude
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "likes",
+            joinColumns =  @JoinColumn(name = "event_id"),
+            inverseJoinColumns = { @JoinColumn(name = "id") })
+    private List<Like> likes;
 }

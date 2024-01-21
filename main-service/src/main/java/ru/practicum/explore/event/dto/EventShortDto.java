@@ -26,11 +26,13 @@ public class EventShortDto {
     private String title;
     private boolean paid;
     private long views;
+    private long likes;
+    private long dislikes;
 
     public static final Comparator<EventShortDto> viewsComparator = new Comparator<EventShortDto>() {
         @Override
         public int compare(EventShortDto event1, EventShortDto event2) {
-            return (int) (event1.getViews() - event2.getViews());
+            return (int) (event2.getViews() - event1.getViews());
         }
     };
 
@@ -38,6 +40,13 @@ public class EventShortDto {
         @Override
         public int compare(EventShortDto event1, EventShortDto event2) {
             return event1.getEventDate().compareTo(event2.getEventDate());
+        }
+    };
+
+    public static final Comparator<EventShortDto> likesComparator = new Comparator<EventShortDto>() {
+        @Override
+        public int compare(EventShortDto event1, EventShortDto event2) {
+            return (int) (event2.getLikes() - event1.getLikes());
         }
     };
 }
